@@ -1,8 +1,9 @@
 {
-  "name": "pi-extension-moonshot-kimi",
+  "name": "pi-extension-kimi-code",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
+  "description": "Kimi Code provider extension for pi (Anthropic-compatible endpoint)",
   "pi": {
     "extensions": ["./index.ts"]
   }
