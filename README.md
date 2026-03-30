@@ -1,106 +1,82 @@
-# pi-kimi-code
+# Pi Extension: Kimi Provider
 
-> Kimi Code provider extension for the [pi coding agent](https://github.com/badlogic/pi-mono).
+This extension adds Kimi Code models to the [pi coding agent](https://github.com/badlogic/pi-mono).
 
-This extension was rewritten to use **Kimi Code API** (Anthropic Messages compatible)
-instead of the general Moonshot API.
-It supports the third-party-agent integration documented in:
-https://www.kimi.com/code/docs/en/more/third-party-agents.html
+## Features
 
-## What it does
+- Integrates Kimi Code via the documented Coding endpoint
+- Uses the `anthropic-messages` transport supported by pi
+- Configured for `https://api.kimi.com/coding`
+- Supports interactive `/login` auth and environment-variable auth
 
-- Registers provider: `kimi-coding`
-- Uses `https://api.kimi.com/coding` (Kimi Code endpoint)
-- Uses `anthropic-messages` transport
-- Supports the following models:
-  - `kimi-for-coding` (recommended)
-  - `k2p5` (alias)
-  - `kimi-k2-thinking`
-- Adds `/login` menu entry so credentials can be managed interactively
-- Also supports environment variable and `auth.json` credentials
+## Prerequisites
 
-## Install
+1. Obtain an API key from [Kimi Code](https://www.kimi.com/code?source=docs).
+2. Set the API key in your environment:
+   ```bash
+   export KIMI_API_KEY=sk-kimi-...
+   ```
 
-This extension is prepared under `~/.pi/agent/extensions/pi-kimi-code` in this workspace.
-If using elsewhere:
+## Installation
+
+### Method 1: Direct from GitHub
+
+You can install this extension directly into your `pi` configuration using the `pi install` command:
 
 ```bash
-git clone https://github.com/dpolishuk/pi-kimi-code ~/.pi/agent/extensions/pi-kimi-code
+pi install git:github.com/dpolishuk/pi-extension-kimi-provider
 ```
+
+### Method 2: Manual Installation
+
+If you prefer to install it manually:
+
+1. Clone this repository into your pi extensions directory:
+   ```bash
+   git clone https://github.com/dpolishuk/pi-extension-kimi-provider ~/.pi/agent/extensions/kimi-provider
+   ```
+2. Reload pi if it's currently running using the `/reload` command.
+
+## Usage
+
+Once installed, you can list the available models:
+
+```bash
+pi --list-models | grep kimi
+```
+
+To use a specific Kimi model:
+
+```bash
+pi --model kimi-coding/kimi-for-coding
+```
+
+In interactive mode, you can switch models with `/model` or `Ctrl+L`.
+
+## Login + auth
+
+You can authenticate this provider via interactive login:
+
+1. In `pi` interactive mode, run `/login`.
+2. Select **Kimi Code (API Key)** from the provider list.
+3. Paste your API key when prompted.
+
+The stored key is written to `~/.pi/agent/auth.json`.
+
+If you prefer env var auth, set `KIMI_API_KEY` before launching `pi`.
 
 ## Configuration
 
-### Option A: Interactive login (recommended)
+The extension is defined in `extensions/kimi-provider.ts`. You can modify the cost, context window, or add new models there.
 
-In pi:
+| Model | ID | Context Window | Reasoning |
+|-------|----|----------------|-----------|
+| Kimi for Coding | `kimi-for-coding` | 262144 | Yes |
+| Kimi K2.5 | `k2p5` | 262144 | Yes |
+| Kimi K2 Thinking | `kimi-k2-thinking` | 262144 | Yes |
 
-```text
-/login
-```
+These are the models currently registered in this plugin. You can add or remove entries in `extensions/kimi-provider.ts`.
 
-Select **"Kimi Code (API Key)"** and paste your key.
+## License
 
-### Option B: Environment variable
-
-```bash
-export KIMI_API_KEY="sk-kimi-..."
-```
-
-Add to shell profile for persistence.
-
-### Option C: auth.json
-
-Add this entry to `~/.pi/agent/auth.json`:
-
-```json
-{
-  "kimi-coding": { "type": "api_key", "key": "sk-kimi-..." }
-}
-```
-
-### Option D: Legacy Anthropic-style variables (optional)
-
-Some Kimi CLI examples use:
-
-```bash
-export ANTHROPIC_API_KEY="sk-kimi-..."
-export ANTHROPIC_BASE_URL="https://api.kimi.com/coding/"
-```
-
-For this extension, `KIMI_API_KEY` (or `/login`) is preferred.
-
-## Verify
-
-```bash
-pi --list-models | grep -i kimi
-```
-
-Expected entries:
-
-- `kimi-coding  kimi-for-coding`
-- `kimi-coding  k2p5`
-- `kimi-coding  kimi-k2-thinking`
-
-## Use
-
-```bash
-# select by provider/model
-pi --model kimi-coding/kimi-for-coding
-
-# or
-pi --model kimi-coding/k2p5
-```
-
-## Notes
-
-- Kimi Code endpoint is primarily aimed at coding workflows.
-- Max output is typically `32768` and context is `262144` tokens for these models.
-- API costs are currently set to `0` placeholders.
-  (pi still needs concrete cost values for accounting; you can tune these in `index.ts`.)
-
-## References
-
-- Kimi third-party agents guide: https://www.kimi.com/code/docs/en/more/third-party-agents.html
-- Kimi membership/API key page: https://www.kimi.com/code?source=docs
-- pi docs: https://github.com/badlogic/pi-mono/blob/main/docs/providers.md
-- custom providers: https://github.com/badlogic/pi-mono/blob/main/docs/custom-provider.md
+MIT
